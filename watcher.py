@@ -3,20 +3,22 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import hmr
 import re
+import json
 
 TSTAMP = time.time()
 
 
 class Watcher:
-    DIRECTORY_TO_WATCH = "D:/GAMES/STEAM/steamapps/common/DARK SOULS III/Game/my_mod"
 
     def __init__(self):
         self.observer = Observer()
+        with open("config.json", "r") as read_file:
+            self.config = json.load(read_file)
 
     def run(self):
-        event_handler = Handler()
+        event_handler = Handler(self.config)
         self.observer.schedule(
-            event_handler, self.DIRECTORY_TO_WATCH, recursive=True)
+            event_handler, self.config['mod_dir'], recursive=True)
         self.observer.start()
         try:
             while True:
@@ -28,23 +30,20 @@ class Watcher:
 
 
 class Handler(FileSystemEventHandler):
+    def __init__(self, config):
+        self.config = config
 
-    @staticmethod
-    def on_any_event(event):
+    def on_any_event(self, event):
         if event.is_directory:
             return None
 
         else:
-            reloadRegexps = [
-                '\.msb.dcx.prev',
-                '\.emevd'
-            ]
             print(f'Changes on file {event.src_path}')
             global TSTAMP
             current_tstamp = time.time()
             tstamp_delta = current_tstamp - TSTAMP
-            print(f'Modification delta: {tstamp_delta} seconds')
-            for regex in reloadRegexps:
+            print(f'Reload delta: {tstamp_delta} seconds')
+            for regex in self.config['reload_regexps']:
                 regex = re.compile(regex)
                 if (re.findall(regex, event.src_path) and tstamp_delta > 2):
                     hmr.reloadMap()

@@ -1,0 +1,7 @@
+{
+  "mod_dir": "D:/GAMES/STEAM/steamapps/common/DARK SOULS III/Game/my_mod",
+  "reload_regexps": [
+    "\\.msb",
+    "\\.emevd"
+  ]
+}
