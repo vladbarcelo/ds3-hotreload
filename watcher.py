@@ -5,8 +5,6 @@ import hmr
 import re
 import json
 
-TSTAMP = time.time()
-
 
 class Watcher:
 
@@ -32,6 +30,8 @@ class Watcher:
 class Handler(FileSystemEventHandler):
     def __init__(self, config):
         self.config = config
+        self.tstamp = time.time()
+        print('init')
 
     def on_any_event(self, event):
         if event.is_directory:
@@ -39,13 +39,12 @@ class Handler(FileSystemEventHandler):
 
         else:
             print(f'Changes on file {event.src_path}')
-            global TSTAMP
             current_tstamp = time.time()
-            tstamp_delta = current_tstamp - TSTAMP
+            tstamp_delta = current_tstamp - self.tstamp
             print(f'Reload delta: {tstamp_delta} seconds')
             for regex in self.config['reload_regexps']:
                 regex = re.compile(regex)
                 if (re.findall(regex, event.src_path) and tstamp_delta > 2):
                     hmr.reloadMap()
-                    TSTAMP = time.time()
+                    self.tstamp = time.time()
                     return
