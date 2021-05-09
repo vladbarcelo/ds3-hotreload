@@ -165,7 +165,6 @@ def warpToBonfire(process, base_addr, bonfire):
         mem.writeMem(process, thread_addr, warp_bytecode)
         thread_start_addr = thread_addr + 0x4
         print(hex(thread_start_addr))
-        # input('Continue? ')
         mem.createThreadSimple(process, thread_start_addr)
         time.sleep(10)
         waitForWarp(process, base_addr)
