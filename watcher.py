@@ -31,7 +31,6 @@ class Handler(FileSystemEventHandler):
     def __init__(self, config):
         self.config = config
         self.tstamp = time.time()
-        print('init')
 
     def on_any_event(self, event):
         if event.is_directory:
